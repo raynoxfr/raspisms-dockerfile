@@ -1,7 +1,6 @@
 #!/usr/bin/bash
 
 INSTALL_DIR="/usr/share/raspisms"
-LOG_DIR="/var/log/raspisms"
 SETTING_DIR="/config"
 
 
@@ -10,7 +9,7 @@ run_at_startup() {
 	if [ -z "$(ls -A $SETTING_DIR)" ];
 	then
 		printf "Copy in setting folder is empty, need to create it\n"
-		cp -a /default-config/. $SETTING_DIR/
+		cp -a /default-config/* $SETTING_DIR/
 		printf "Done\n"
 		do_app_config
 	else
@@ -144,9 +143,8 @@ do_app_user () {
 
     printf "\n"
     printf "$GENERATED_USER_TEXT" > "credentials"
-    printf "  Make credentials files 700 and root\n"
+    printf "  Make credentials file 700\n"
     chmod 700 credentials
-    chown root credentials
 
     printf "Done\n"
 }

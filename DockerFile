@@ -26,6 +26,8 @@ python3-gammu \
 zip \
 unzip
 
+COPY start.sh /opt/
+COPY apache.conf /etc/apache2/sites-enabled/000-default.conf
 COPY --from=ghcr.io/ufoscout/docker-compose-wait:latest /wait /wait
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -40,11 +42,10 @@ RUN for i in *.dist; do mv -i $i `basename $i .dist`; done
 
 RUN rm -rf /var/www/html
 RUN ln -s  /usr/share/raspisms /var/www/html
-COPY apache.conf /etc/apache2/sites-enabled/000-default.conf
 
 # EDIT FILE WITH NO DEFINED VARIABLE
 RUN sed -i -E -- "s/(\\\$dir_path = ')[^']*(';)/\\1%APP_DIR_HTTP_URL%\\2/g" env.php
-RUN sed -i -- '/\$dir_path =/a\    \$environment\['"'"HTTP_PROTOCOL"'"'\] = "%APP_HTTP_PROTOCOL%://";' env.php
+RUN sed -i -- '/\$dir_path =/a\    \$environment\['"'"HTTP_PROTOCOL"'"'\] = '"'"%APP_HTTP_PROTOCOL%://"'"';' env.php
 
 # Default variables
 ENV CREATE_ALL_SETTING=false
@@ -54,10 +55,11 @@ ENV APP_ENV=prod
 ENV APP_URL_SHORTENER=false
 ENV APP_USER_EMAIL=admin@raspisms.fr
 
-RUN mkdir /config /default-config
-RUN mv env.prod.php /default-config/ && touch /config/env.prod.php && ln -s /config/env.prod.php . && rm -f /config/env.prod.php
-RUN mv env.php /default-config/ && touch /config/env.php && ln -s /config/env.php . && rm -f /config/env.php
-RUN mv phinx.yml /default-config/ && touch /config/phinx.yml && ln -s /config/phinx.yml . && rm -f /config/phinx.yml
+RUN mkdir /config /default-config /var/log/raspisms
+
+RUN mv env.prod.php /default-config/ && touch /config/env.prod.php && ln -s /config/env.prod.php .
+RUN mv env.php /default-config/ && touch /config/env.php && ln -s /config/env.php .
+RUN mv phinx.yml /default-config/ && touch /config/phinx.yml && ln -s /config/phinx.yml .
 
 COPY gammurc /default-config/
 RUN touch /config/gammurc && ln -s /config/gammurc ~/.gammurc && rm -f /config/gammurc
@@ -69,9 +71,35 @@ RUN rm -rf confs
 WORKDIR /var/www/html
 RUN composer install
 
+# FILES PERMISSIONS
+ARG USERRAS=raspisms
+ARG GROUPRAS=www-data
+RUN useradd -M -N -s /bin/bash -g ${GROUPRAS} ${USERRAS}
+
+#  Make all files belongs to raspisms
+RUN chown -R "${USERRAS}:${GROUPRAS}" . /var/log/raspisms /config
+
+#  Make all files 664
+RUN find . -type f -exec chmod 664 {} \;
+
+#  Make all directories 775
+RUN find . -type d -exec chmod 775 {} \;
+RUN chmod 775 /var/log/raspisms /config
+
+#  Make scripts 751
+RUN chmod 751 scripts
+
+#  Make console.php bin/* and vendor/bin/* 754
+RUN chmod -R 754 console.php bin vendor/bin
+
+# Make /opt/start.sh 755
+RUN chmod 755 /opt/start.sh
+
 #VOLUME /config
 EXPOSE 80
 
-COPY start.sh /opt/
-CMD /usr/bin/bash -c '/opt/start.sh'
+# CLEANING
+RUN rm -f /config/*
 
+#CMD su -c '/opt/start.sh' raspisms
+CMD /usr/bin/bash -c '/opt/start.sh'
