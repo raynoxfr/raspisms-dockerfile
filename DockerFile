@@ -1,0 +1,77 @@
+FROM debian:12-slim
+
+
+MAINTAINER Raynox-FR "docker@homegateway.fr"
+
+WORKDIR /tmp
+
+USER root
+RUN echo "deb http://ftp.de.debian.org/debian buster main" | tee -a /etc/apt/sources.list.d/gammu.list
+
+RUN apt-get update \
+&& apt-get install -y \
+git \
+php \
+curl \
+php-cli \
+php-mysql \
+php-json \
+php-curl \
+php-mbstring \
+php-xml \
+php-zip \
+python3 \
+gammu \
+python3-gammu \
+zip \
+unzip
+
+COPY --from=ghcr.io/ufoscout/docker-compose-wait:latest /wait /wait
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN apt-get install -y  nano iputils-ping
+
+RUN apt-get clean
+RUN rm -rf /var/lib/apt/lists/*
+
+WORKDIR /usr/share/raspisms
+RUN git clone https://github.com/RaspbianFrance/raspisms.git .
+RUN for i in *.dist; do mv -i $i `basename $i .dist`; done
+
+RUN rm -rf /var/www/html
+RUN ln -s  /usr/share/raspisms /var/www/html
+COPY apache.conf /etc/apache2/sites-enabled/000-default.conf
+
+# EDIT FILE WITH NO DEFINED VARIABLE
+RUN sed -i -E -- "s/(\\\$dir_path = ')[^']*(';)/\\1%APP_DIR_HTTP_URL%\\2/g" env.php
+RUN sed -i -- '/\$dir_path =/a\    \$environment\['"'"HTTP_PROTOCOL"'"'\] = "%APP_HTTP_PROTOCOL%://";' env.php
+
+# Default variables
+ENV CREATE_ALL_SETTING=false
+ENV APP_HTTP_PROTOCOL=http
+ENV APP_DIR_HTTP_URL=/
+ENV APP_ENV=prod
+ENV APP_URL_SHORTENER=false
+ENV APP_USER_EMAIL=admin@raspisms.fr
+
+RUN mkdir /config /default-config
+RUN mv env.prod.php /default-config/ && touch /config/env.prod.php && ln -s /config/env.prod.php . && rm -f /config/env.prod.php
+RUN mv env.php /default-config/ && touch /config/env.php && ln -s /config/env.php . && rm -f /config/env.php
+RUN mv phinx.yml /default-config/ && touch /config/phinx.yml && ln -s /config/phinx.yml . && rm -f /config/phinx.yml
+
+COPY gammurc /default-config/
+RUN touch /config/gammurc && ln -s /config/gammurc ~/.gammurc && rm -f /config/gammurc
+
+RUN ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load
+
+RUN rm -rf confs
+
+WORKDIR /var/www/html
+RUN composer install
+
+#VOLUME /config
+EXPOSE 80
+
+COPY start.sh /opt/
+CMD /usr/bin/bash -c '/opt/start.sh'
+

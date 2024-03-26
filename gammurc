@@ -1,0 +1,14 @@
+[gammu]
+
+port = /dev/modem
+name = Modem
+model = at
+connection = at
+synchronizetime = yes
+gammu_coding = utf8
+logfile = /var/log/gammu.log
+log_format = textalldate
+
+DeliveryReport = sms
+
+DebugLevel = 255
