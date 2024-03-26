@@ -1,7 +1,6 @@
 #!/usr/bin/bash
 
 INSTALL_DIR="/usr/share/raspisms"
-SETTING_DIR="/confg"
 LOG_DIR="/var/log/raspisms"
 SETTING_DIR="/config"
 
