@@ -95,11 +95,11 @@ RUN chmod -R 754 console.php bin vendor/bin
 # Make /opt/start.sh 755
 RUN chmod 755 /opt/start.sh
 
-#VOLUME /config
-EXPOSE 80
-
 # CLEANING
 RUN rm -f /config/*
+
+#VOLUME /config
+EXPOSE 80
 
 #CMD su -c '/opt/start.sh' raspisms
 CMD /usr/bin/bash -c '/opt/start.sh'
