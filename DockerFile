@@ -1,7 +1,7 @@
 FROM debian:12-slim
 
 
-MAINTAINER Raynox-FR "docker@homegateway.fr"
+MAINTAINER Raynoxfr "docker@homegateway.fr"
 
 WORKDIR /tmp
 
@@ -68,7 +68,6 @@ RUN ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rew
 
 RUN rm -rf confs
 
-WORKDIR /var/www/html
 RUN composer install
 
 # FILES PERMISSIONS
@@ -101,5 +100,4 @@ RUN rm -f /config/*
 #VOLUME /config
 EXPOSE 80
 
-#CMD su -c '/opt/start.sh' raspisms
 CMD /usr/bin/bash -c '/opt/start.sh'
