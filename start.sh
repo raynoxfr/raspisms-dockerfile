@@ -8,7 +8,7 @@ run_at_startup() {
 	printf "Default setting\n"
 	if [ -z "$(ls -A $SETTING_DIR -I gammurc)" ];
 	then
-		printf "Copy in setting folder is empty, need to create it\n"
+		printf "Copy in setting folder is empty (excluding 'gammurc'), need to create it\n"
 		cp -n -a /default-config/* $SETTING_DIR/
 		printf "Done\n"
 		do_app_config
