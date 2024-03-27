@@ -3,6 +3,15 @@ FROM debian:12-slim
 
 MAINTAINER Raynoxfr "docker@homegateway.fr"
 
+
+# Default variables
+ENV CREATE_ALL_SETTING=false
+ENV APP_HTTP_PROTOCOL=http
+ENV APP_DIR_HTTP_URL=/
+ENV APP_ENV=prod
+ENV APP_URL_SHORTENER=false
+ENV APP_USER_EMAIL=admin@raspisms.fr
+
 WORKDIR /tmp
 
 USER root
@@ -46,14 +55,6 @@ RUN ln -s  /usr/share/raspisms /var/www/html
 # EDIT FILE WITH NO DEFINED VARIABLE
 RUN sed -i -E -- "s/(\\\$dir_path = ')[^']*(';)/\\1%APP_DIR_HTTP_URL%\\2/g" env.php
 RUN sed -i -- '/\$dir_path =/a\    \$environment\['"'"HTTP_PROTOCOL"'"'\] = '"'"%APP_HTTP_PROTOCOL%://"'"';' env.php
-
-# Default variables
-ENV CREATE_ALL_SETTING=false
-ENV APP_HTTP_PROTOCOL=http
-ENV APP_DIR_HTTP_URL=/
-ENV APP_ENV=prod
-ENV APP_URL_SHORTENER=false
-ENV APP_USER_EMAIL=admin@raspisms.fr
 
 RUN mkdir /config /default-config /var/log/raspisms
 
