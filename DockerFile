@@ -44,14 +44,14 @@ WORKDIR /usr/share/raspisms
 RUN git clone https://github.com/RaspbianFrance/raspisms.git .
 RUN for i in *.dist; do mv -i $i `basename $i .dist`; done
 
+# EDIT SETTING FILE TO DEFINE VARIABLES
+RUN sed -i -E -- "s/(\\\$dir_path = ')[^']*(';)/\\1%APP_DIR_HTTP_URL%\\2/g" env.php
+RUN sed -i -- '/\$dir_path =/a\    \$environment\['"'"HTTP_PROTOCOL"'"'\] = '"'"%APP_HTTP_PROTOCOL%://"'"';' env.php
+
 # SETTING FOR APACHE
 RUN rm -rf /var/www/html && ln -s  /usr/share/raspisms /var/www/html
 RUN ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load
 
-
-# EDIT SETTING FILE TO DEFINE VARIABLES
-RUN sed -i -E -- "s/(\\\$dir_path = ')[^']*(';)/\\1%APP_DIR_HTTP_URL%\\2/g" env.php
-RUN sed -i -- '/\$dir_path =/a\    \$environment\['"'"HTTP_PROTOCOL"'"'\] = '"'"%APP_HTTP_PROTOCOL%://"'"';' env.php
 
 # CREATE SYMLINK TO SETTING DIRECTORY 'CONFIG'
 RUN mv env.prod.php /default-config/ && touch /config/env.prod.php && ln -s /config/env.prod.php .
