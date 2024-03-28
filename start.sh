@@ -6,10 +6,10 @@ SETTING_DIR="/config"
 
 run_at_startup() {
 	printf "Default setting\n"
-	if [ -z "$(ls -A $SETTING_DIR -I gammurc)" ];
+	if [ -z "$(ls -A $SETTING_DIR)" ];
 	then
-		printf "Copy in setting folder is empty (excluding 'gammurc'), need to create it\n"
-		cp -n -a /default-config/* $SETTING_DIR/
+		printf "Copy in setting folder is empty, need to create it\n"
+		cp -a /default-config/* $SETTING_DIR/
 		printf "Done\n"
 		do_app_config
 	else
@@ -26,7 +26,7 @@ run_at_startup() {
 		do_phinx
 		do_app_user
 	else
-	printf "Environment variable CREATE_ALL_SETTING not set to true, skip this step\n"
+		printf "Environment variable CREATE_ALL_SETTING not set to true, skip this step\n"
 	fi
 	do_line
 
@@ -44,7 +44,7 @@ run_at_startup() {
 	$INSTALL_DIR/bin/start.sh
 	if [ ! $? -eq 0 ]
 	then
-			printf "Cannot start raspisms."
+		printf "Cannot start raspisms."
 	else
 		printf "Done.\n"
 	fi
@@ -61,6 +61,7 @@ do_line() {
 	printf '=%.0s' {1..100}
 	printf '\n'
 }
+
 
 do_replace_envar() {
 	VAR=$1
