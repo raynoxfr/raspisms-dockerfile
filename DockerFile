@@ -9,7 +9,6 @@ USER root
 
 # DFAULT VARIABLES
 ENV CREATE_ALL_SETTING=false
-ENV APP_HTTP_PROTOCOL=http
 ENV APP_DIR_HTTP_URL=/
 ENV APP_ENV=prod
 ENV APP_URL_SHORTENER=false
@@ -46,7 +45,7 @@ RUN for i in *.dist; do mv -i $i `basename $i .dist`; done
 
 # EDIT SETTING FILE TO DEFINE VARIABLES
 RUN sed -i -E -- "s/(\\\$dir_path = ')[^']*(';)/\\1%APP_DIR_HTTP_URL%\\2/g" env.php
-RUN sed -i -- '/\$dir_path =/a\    \$environment\['"'"HTTP_PROTOCOL"'"'\] = '"'"%APP_HTTP_PROTOCOL%://"'"';' env.php
+RUN sed -i -- '/\$dir_path =/a\    \$environment\['"'"HTTP_PROTOCOL"'"'\] = '"'"%APP_HTTP_PROTOCOL%"'"';' env.php
 
 # SETTING FOR APACHE
 RUN rm -rf /var/www/html && ln -s  /usr/share/raspisms /var/www/html

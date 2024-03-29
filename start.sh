@@ -84,6 +84,8 @@ do_app_config () {
 
 	cd $SETTING_DIR
 
+	export APP_HTTP_PROTOCOL="$(echo $APP_STATIC_HTTP_URL | grep :// | sed -e's,^\(.*://\).*,\1,g')"
+
 	do_replace_envar 'APP_ENV'
 	do_replace_envar 'APP_SECRET'
 
