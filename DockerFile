@@ -86,7 +86,7 @@ RUN rm -rf /var/lib/apt/lists/*
 RUN rm -rf confs /config/*
 
 
-#VOLUME /config
+VOLUME /config
 EXPOSE 80
 
 CMD /usr/bin/bash -c '/opt/start.sh'
