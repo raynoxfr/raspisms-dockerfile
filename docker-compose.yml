@@ -12,7 +12,6 @@ services:
       - PUID=1000
       - PGID=1000
       - APP_SECRET=$CONFIG_SECRET
-      - APP_HTTP_PROTOCOL=http
       - APP_STATIC_HTTP_URL=http://URL
       - APP_DATABASE_HOST=raspisms-db
       - APP_DATABASE_NAME=raspisms
