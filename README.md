@@ -8,8 +8,7 @@ L'application est sous licence libre et est disponible en auto-hﾃｩbergement ou [
 
 # DockerFile
 
-Ce repo hﾃッerge les fichiers afin de gﾃハﾃビer une image Docker.
-
+Ce repio hﾃberge les fichiers afin de gﾃnﾃｩrer une image Docker
 # Docker Compose (YML)
 
 Un fichier docker-compose.yml permet de lancer Raspisms, via Docker, en se basant sur l'image gﾃハﾃビﾃテ, via le DockerFile
