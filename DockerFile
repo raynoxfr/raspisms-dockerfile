@@ -1,7 +1,7 @@
 FROM debian:12-slim
 
 
-MAINTAINER Raynoxfr "docker@homegateway.fr"
+MAINTAINER Raynoxfr "me@mail.fr"
 
 
 # USER FOR IMAGE
